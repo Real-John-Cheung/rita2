@@ -338,6 +338,7 @@ public class RiTaTests {
 		}
 
 		assertTrue(!RiTa.isPunct(""));
+		assertTrue(!RiTa.isPunct(null));
 
 		//chinese characters
 		assertTrue(!RiTa.isPunct("你"));
@@ -628,7 +629,19 @@ public class RiTaTests {
 	}
 
 	@Test
-	public void callKwic(){
+	public void callKwic() {
+		RiTa.concorder = null;
+		//without calling concordance
+		assertThrows(RiTaException.class, () -> {
+			RiTa.kwic("cat");
+		});
+		RiTa.concorder = null;
+		assertThrows(RiTaException.class, () -> {
+			RiTa.kwic("cat", 4);
+		});
+		RiTa.concorder = null;
+		RiTa.kwic("cat", opts("text", "A sentence includes cat"));
+
 		String[] result;
 		RiTa.concordance("A sentence includes cat.");
 		result = RiTa.kwic("cat");
@@ -738,6 +751,7 @@ public class RiTaTests {
 
 		assertTrue(!RiTa.isConsonant(""), "empty string should return false");
 		assertTrue(!RiTa.isConsonant("word"), "for words return false");
+		assertTrue(!RiTa.isConsonant(","), "for puncts return false");
 	}
 
 	@Test
@@ -756,8 +770,8 @@ public class RiTaTests {
 		assertTrue(RiTa.isVowel("i"));
 		assertTrue(RiTa.isVowel("o"));
 		assertTrue(RiTa.isVowel("u"));
-		assertTrue(!RiTa.isVowel('k'));
-		assertTrue(!RiTa.isVowel('z'));
+		assertTrue(!RiTa.isVowel("k"));
+		assertTrue(!RiTa.isVowel("z"));
 	}
 
 	@Test
@@ -767,6 +781,14 @@ public class RiTaTests {
 		assertThrows(RuntimeException.class, () -> {
 			Map<String, Object> opts = RiTa.opts(keys, values);
 		});
+	}
+
+	@Test
+	public void callCaptalize() {
+		assertEquals("", RiTa.capitalize(null));
+		assertEquals("", RiTa.capitalize(""));
+		assertEquals("A", RiTa.capitalize("a"));
+		assertEquals("Apple", RiTa.capitalize("apple"));
 	}
 
 	//--------------------------------helper----------------------
